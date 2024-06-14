@@ -10,7 +10,7 @@ BDD_FILE=/usr/src/app/pod/db.sqlite3
 if test ! -f "$BDD_FILE"; then
     echo "$BDD_FILE does not exist."
     python3 manage.py create_pod_index
-    curl -XGET "elasticsearch.localhost:9200/pod/_search"
+    curl -XGET "elasticsearch.localhost:9200/pod/_search" &> /dev/null
     # Deployez les fichiers statiques
     python3 manage.py collectstatic --no-input --clear
     # Lancez le script présent à la racine afin de créer les fichiers de migration, puis de les lancer pour créer la base de données SQLite intégrée.
@@ -19,7 +19,7 @@ if test ! -f "$BDD_FILE"; then
     # Il faut créer un premier utilisateur qui aura tous les pouvoirs sur votre instance.
     python3 manage.py createsuperuser --noinput
 else
-    echo "$BDD_FILE exist."
+    echo "$BDD_FILE exists."
 fi
 # Serveur de développement
 # Le serveur de développement permet de tester vos futures modifications facilement.
