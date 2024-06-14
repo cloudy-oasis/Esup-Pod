@@ -24,6 +24,8 @@ RUN apt-get update \
         netcat \
         ffmpeg \
         gettext \
+        sox \
+        libsox-fmt-all \
     && apt-get clean\
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,6 +41,13 @@ COPY --from=source-build-js /tmp/pod/node_modules/ /tmp/node_modules/
 
 RUN pip3 install --no-cache-dir -r requirements-conteneur.txt \
     && pip3 install elasticsearch==8.9.0
+
+# Cannot be included in the requirements file or it'll fail, we need to
+# install numpy *before* them. I also prefer separating them from other
+# packages as they take a long time to build, so by putting them in a
+# separate step you can see progress slightly better.
+RUN pip3 install --no-cache-dir sox>=1.5.0 \
+    && pip3 install --no-cache-dir openai-whisper>=20231117
 
 # ENTRYPOINT:
 COPY ./dockerfile-dev-with-volumes/pod/my-entrypoint.sh /tmp/my-entrypoint.sh
